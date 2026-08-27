@@ -1,7 +1,7 @@
-from fastapi import fastapi
+from fastapi import FastAPI
 
 app = FastAPI()
 
 @app.get("/")
 async def hello():
-    
+    return "Olá, mundo!!" 

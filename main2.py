@@ -16,18 +16,23 @@ class Produto(BaseModel):
 def ler_csv():
     produtos = []
     if os.path.exists(CSV_FILE):
-        with open(CSV_FILE, mode="r", newline="", enconding="utf-8") as file:
+        with open(CSV_FILE, mode="r", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             for row in reader:
-                produtos.append(Produto(**row))
+                produtos.append(Produto(
+                    id= int(row["id"]),
+                    nome= row["nome"],
+                    preco= float(row["preco"]),
+                    quantidade= int(row["quantidade"])
+                ))
     return produtos
 
 def escrever_csv(produtos):
-    with open(CSV_FILE, mode="r", newline="", enconding="utf-8") as file:
+    with open(CSV_FILE, mode="w", newline="", encoding="utf-8") as file:
         fieldnames = ["id", "nome", "preco", "quantidade"]
 
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writerheader()
+        writer.writeheader()
         for produto in produtos:
             writer.writerow(produto.dict())
 
@@ -40,6 +45,15 @@ def criar_produto(produto: Produto):
     produtos = ler_csv()
     if any(p.id == produto.id for p in produtos):
         raise HTTPException(status_code=400, detail="Id já existe")
-        produtos.append(produtos)
-        escrever_csv(produtos)
-        return produto
+    produtos.append(produto)
+    escrever_csv(produtos)
+    return produto
+
+@app.get("/produtos/{produto_id}", response_model=Produto)
+def buscar_por_id(produto_id : int):
+    produtos = ler_csv()
+
+    for produto in produtos:
+        if produto.id == produto_id:
+            return produto
+    raise HTTPException(status_code=404, detail="Produto não econtrado")

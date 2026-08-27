@@ -40,6 +40,13 @@ def escrever_csv(produtos):
 def listar_produtos():
     return ler_csv()
 
+def buscar_id_csv(produto_id: int):
+    produtos = ler_csv()
+    for p in produtos:
+        if p.id == produto_id:
+            return p
+    return None
+
 @app.post("/produtos", response_model=Produto)
 def criar_produto(produto: Produto):
     produtos = ler_csv()
@@ -51,9 +58,7 @@ def criar_produto(produto: Produto):
 
 @app.get("/produtos/{produto_id}", response_model=Produto)
 def buscar_por_id(produto_id : int):
-    produtos = ler_csv()
-
-    for produto in produtos:
-        if produto.id == produto_id:
-            return produto
-    raise HTTPException(status_code=404, detail="Produto não econtrado")
+    produto = buscar_id_csv(produto_id)
+    if not produto:
+        raise HTTPException(status_code=404, detail="Produto não econtrado")
+    return produto

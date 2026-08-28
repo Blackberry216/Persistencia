@@ -36,16 +36,18 @@ def escrever_csv(produtos):
         for produto in produtos:
             writer.writerow(produto.dict())
 
-@app.get("/produtos", response_model=list[Produto])
-def listar_produtos():
-    return ler_csv()
-
 def buscar_id_csv(produto_id: int):
     produtos = ler_csv()
     for p in produtos:
         if p.id == produto_id:
             return p
     return None
+
+
+@app.get("/produtos", response_model=list[Produto])
+def listar_produtos():
+    return ler_csv()
+
 
 @app.post("/produtos", response_model=Produto)
 def criar_produto(produto: Produto):
@@ -64,7 +66,14 @@ def buscar_por_id(produto_id : int):
     return produto
 
 @app.put("/produtos/{produto_id}", response_model=Produto)
-
+def atualizar_produto(produto_id : int, produto_atualizado : Produto):
+    produtos = listar_produtos()
+    for i, produto in enumerate(produtos):
+        if produto.id == produto_id:
+            produtos[i]= produto_atualizado
+            escrever_csv(produtos)
+            return produto_atualizado    
+    raise HTTPException(status_code=404, detail="Produto não encontrado")
 
 @app.delete("/produtos/{id_produto}", response_model=dict)
 def deletar_produtor(produto_id: int):

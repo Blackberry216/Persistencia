@@ -1,4 +1,4 @@
 id,nome,preco,quantidade
-0,string,0.0,0
-2,arroz,3.0,4
-4,feijao,2.0,3
+1,coca,3.0,10
+3,macarrão,3.0,10
+3,feijão,5.0,10

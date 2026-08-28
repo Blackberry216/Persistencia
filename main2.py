@@ -62,3 +62,17 @@ def buscar_por_id(produto_id : int):
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não econtrado")
     return produto
+
+@app.put("/produtos/{produto_id}", response_model=Produto)
+
+
+@app.delete("/produtos/{id_produto}", response_model=dict)
+def deletar_produtor(produto_id: int):
+    produtos = listar_produtos()
+
+    produtos_filtrados = [produto for produto in produtos if produto.id != produto_id]
+    if len(produtos) == len(produtos_filtrados):
+        raise HTTPException(404, detail="produto não encontrado")
+
+    escrever_csv(produtos_filtrados)
+    return {"msg": "produto deletado com sucesso"}
